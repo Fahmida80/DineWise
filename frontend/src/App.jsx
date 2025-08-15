@@ -1,4 +1,3 @@
-
 import {Routes, Route } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -11,6 +10,10 @@ import NewOrder from "./pages/NewOrder";
 import EditOrder from "./pages/EditOrder";
 import Homepage from "./pages/Homepage";
 import MergeSplitTables from "./pages/MergeSplitTables";
+import MenuPage from './pages/MenuPage';
+
+import DishPopularityPage from './pages/DishPopularityPage';
+import Inventory from './pages/InventoryPage';
 
 const App = () => {
   return (
@@ -25,7 +28,9 @@ const App = () => {
             <Route path="/orders/new" element={<NewOrder />} />
             <Route path="/orders/edit/:id" element={<EditOrder />} />
             <Route path="/merge-split-tables" element={<MergeSplitTables />} />
-       
+            <Route path="/menu" element={<MenuPage />} />
+            <Route path="/dish-popularity" element={<DishPopularityPage />} />
+            <Route path="/inventory" element={<Inventory />} />
             
             {/* Fallback route */}
       </Routes>

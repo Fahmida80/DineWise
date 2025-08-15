@@ -1,14 +1,4 @@
-// import React from 'react'
 
-// const EditTable = () => {
-//   return (
-//     <div>
-//       Edit as you like!
-//     </div>
-//   )
-// }
-
-// export default EditTable
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -82,7 +72,7 @@ const EditTable = () => {
         throw new Error(errorData.message || 'Failed to update table');
       }
 
-      navigate('/tables'); // Redirect to table dashboard after success
+      navigate('/tables'); 
     } catch (err) {
       setError(err.message);
     }
@@ -126,7 +116,7 @@ const EditTable = () => {
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
               min="1"
-              disabled // Typically table numbers shouldn't be changed
+              disabled 
             />
           </div>
 

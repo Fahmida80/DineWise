@@ -1,13 +1,4 @@
-// import React from 'react'
 
-
-// const MergeSplitTables = () => {
-//   return (
-//     <div>MergeSplitTables</div>
-//   )
-// }
-
-// export default MergeSplitTables
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -19,7 +10,7 @@ const MergeSplitTables = () => {
   const [selectedTables, setSelectedTables] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch all tables on component mount
+
   const fetchTables = async () => {
     try {
       setLoading(true);
@@ -37,7 +28,6 @@ const MergeSplitTables = () => {
     fetchTables();
   }, []);
 
-  // Toggle table selection checkbox
   const toggleTable = (tableId) => {
     if (selectedTables.includes(tableId)) {
       setSelectedTables(selectedTables.filter((id) => id !== tableId));
@@ -46,14 +36,13 @@ const MergeSplitTables = () => {
     }
   };
 
-  // Merge tables handler
   const handleMerge = async () => {
     if (selectedTables.length < 2) {
       toast.error("Select at least 2 tables to merge.");
       return;
     }
     try {
-      // Using mainTableNumber as first selected, rest as tablesToMerge
+  
       const mainTableNumber = tables.find(t => t._id === selectedTables[0])?.number;
       const tablesToMerge = selectedTables.slice(1).map(id => tables.find(t => t._id === id)?.number);
 
@@ -71,7 +60,6 @@ const MergeSplitTables = () => {
     }
   };
 
-  // Split table handler
   const handleSplit = async () => {
     if (selectedTables.length !== 1) {
       toast.error("Select exactly one merged table to split.");

@@ -19,7 +19,7 @@ const Homepage = () => {
         {/* Simplified food icons (only 2 remaining) */}
         <div className="flex justify-center gap-8 w-full px-4">
           <img
-            src="https://img.icons8.com/plasticine/100/olive.png"
+            src="https://img.icons8.com/plasticine/ 100/olive.png"
             alt="Fresh ingredients"
             className="w-20 h-20 hover:rotate-12 transition-transform"
           />

@@ -1,6 +1,10 @@
 import express from 'express';
 import tableRoutes from "./routes/tableRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import menuRoutes from './routes/menuRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import inventoryRoutes from './routes/inventoryRoutes.js';
 import { connectDB } from './config/db.js';
 import dotenv from 'dotenv';
 import rateLimiter from './middleware/rateLimiter.js';
@@ -28,6 +32,10 @@ app.use(cors());  // Place this before your routes
 
 app.use("/api/tables", tableRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/users", userRoutes);
+app.use('/api/menu', menuRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 connectDB().then( () => {
   app.listen(PORT, () => {

@@ -1,14 +1,3 @@
-// import React from 'react'
-
-// const NewTable = () => {
-//   return (
-//     <div>
-//       Create a New Table Here for guests!
-//     </div>
-//   )
-// }
-
-// export default NewTable
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -55,7 +44,7 @@ const NewTable = () => {
         throw new Error(errorData.message || 'Failed to create table');
       }
 
-      navigate('/tables'); // Redirect to table dashboard after success
+      navigate('/tables'); 
     } catch (err) {
       setError(err.message);
     }

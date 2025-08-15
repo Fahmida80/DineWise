@@ -1,7 +1,8 @@
 import Order from "../models/Order.js";
 import Table from "../models/Table.js";
+import MenuItem from '../models/MenuItem.js';
 import mongoose from 'mongoose';
-
+import { reduceIngredientStock } from '../controllers/inventoryController.js'; // Import reduceIngredientStock function
 
 
 // controllers/orderController.js
@@ -16,26 +17,74 @@ export const getAllOrders = async (req, res) => {
 
 
 // Place a new order using tableNumber instead of table _id
+// export const placeOrder = async (req, res) => {
+//   try {
+//     const { tableNumber, items } = req.body;
+
+//     // Validate table by number
+//     const existingTable = await Table.findOne({ number: tableNumber });
+//     if (!existingTable) {
+//       return res.status(404).json({ message: "Table not found" });
+//     }
+
+//     // Use the _id of the found table for the order
+//     const newOrder = new Order({ table: existingTable._id, items });
+//     await newOrder.save();
+
+//     res.status(201).json({ message: "Order placed successfully", order: newOrder });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 export const placeOrder = async (req, res) => {
   try {
     const { tableNumber, items } = req.body;
 
-    // Validate table by number
+    // Step 1: Find the table by number
     const existingTable = await Table.findOne({ number: tableNumber });
     if (!existingTable) {
       return res.status(404).json({ message: "Table not found" });
     }
 
-    // Use the _id of the found table for the order
+    // Step 2: Initialize an array to store updated ingredients
+    const updatedIngredients = [];
+
+    // Step 3: Loop through each item in the order
+    for (const item of items) {
+      // Step 4: Fetch the menu item and populate ingredient details
+      const menuItem = await MenuItem.findOne({ name: item.name }).populate('ingredients.ingredientId');
+      if (!menuItem) {
+        return res.status(404).json({ message: `Menu item ${item.name} not found` });
+      }
+
+      // Step 5: Loop through each ingredient in the menu item
+      for (const ingredient of menuItem.ingredients) {
+        const ingredientData = ingredient.ingredientId;
+        const quantityUsed = ingredient.quantity * item.quantity;  // Total quantity of ingredient used
+
+        // Step 6: Reduce stock of this ingredient using the inventoryController's function
+        try {
+          // Call the reduceIngredientStock function to reduce stock
+          await reduceIngredientStock(ingredientData._id, quantityUsed);  // Reduce the stock
+          updatedIngredients.push(ingredientData); // Track the updated ingredients
+        } catch (error) {
+          return res.status(400).json({ message: `Error reducing stock for ingredient: ${ingredientData.name}`, error: error.message });
+        }
+      }
+    }
+
+    // Step 7: Create and save the order
     const newOrder = new Order({ table: existingTable._id, items });
     await newOrder.save();
 
+    // Step 8: Respond with success message
     res.status(201).json({ message: "Order placed successfully", order: newOrder });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Order placement error:", error);
+    res.status(500).json({ message: "Error placing the order", error: error.message });
   }
 };
-
 
 
 
