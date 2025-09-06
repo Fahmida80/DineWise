@@ -1,20 +1,32 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import { Plus, Split, RefreshCcw } from "lucide-react";
+import ProtectedRoute from "../components/ProtectedRoute"; // ADD IMPORT
 
 const MergeSplitTables = () => {
   const [tables, setTables] = useState([]);
   const [selectedTables, setSelectedTables] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Get token from localStorage
+  const getAuthToken = () => {
+    return localStorage.getItem('token');
+  };
+
+  // Create axios instance with auth header
+  const api = axios.create({
+    baseURL: 'http://localhost:5002/api',
+    headers: {
+      'Authorization': `Bearer ${getAuthToken()}`
+    }
+  });
 
   const fetchTables = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5002/api/tables");
+      const res = await api.get("/tables");
       setTables(res.data);
       setLoading(false);
     } catch (err) {
@@ -42,11 +54,10 @@ const MergeSplitTables = () => {
       return;
     }
     try {
-  
       const mainTableNumber = tables.find(t => t._id === selectedTables[0])?.number;
       const tablesToMerge = selectedTables.slice(1).map(id => tables.find(t => t._id === id)?.number);
 
-      await axios.post("http://localhost:5002/api/tables/merge", {
+      await api.post("/tables/merge", {
         mainTableNumber,
         tablesToMerge,
       });
@@ -74,7 +85,7 @@ const MergeSplitTables = () => {
     }
 
     try {
-      await axios.post("http://localhost:5002/api/tables/split", {
+      await api.post("/tables/split", {
         mainTableNumber: selectedTable.number,
         tablesToSplit: selectedTable.mergedWith?.map(t => tables.find(tab => tab._id === t)?.number) || [],
       });
@@ -153,4 +164,11 @@ const MergeSplitTables = () => {
   );
 };
 
-export default MergeSplitTables;
+// WRAP WITH ProtectedRoute
+export default function ProtectedMergeSplitTables() {
+  return (
+    <ProtectedRoute allowedRoles={['staff']}>
+      <MergeSplitTables />
+    </ProtectedRoute>
+  );
+}

@@ -1,20 +1,20 @@
 import express from 'express';
 import {reduceIngredientStock, addIngredientStock, checkLowStock, listAllIngredients, addBulkIngredientStock } from '../controllers/inventoryController.js';
-
+import protectRoute from '../middleware/protectRoute.js';
 const router = express.Router();
 
 
 
 // Add stock to an ingredient
-router.post('/ingredients/addStock', addIngredientStock);
+router.post('/ingredients/addStock',protectRoute(['staff']), addIngredientStock);
 
 // Check for low stock items
-router.get('/ingredients/lowStock', checkLowStock);
+router.get('/ingredients/lowStock',protectRoute(['staff']), checkLowStock);
 
 // List all ingredients
-router.get('/ingredients', listAllIngredients);
+router.get('/ingredients', protectRoute(['staff']),listAllIngredients);
 
-router.patch('/ingredients/reduceStock/:ingredientId', async (req, res) => {
+router.patch('/ingredients/reduceStock/:ingredientId', protectRoute(['staff']), async (req, res) => {
     const { ingredientId } = req.params;
     const { quantityToReduce } = req.body;  // The quantity to reduce from stock
   
@@ -32,6 +32,6 @@ router.patch('/ingredients/reduceStock/:ingredientId', async (req, res) => {
     }
   });
   
-router.post('/ingredients/addBulkStock', addBulkIngredientStock);
+router.post('/ingredients/addBulkStock', protectRoute(['staff']), addBulkIngredientStock);
 
 export default router;

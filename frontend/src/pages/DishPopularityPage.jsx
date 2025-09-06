@@ -5,7 +5,6 @@ import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { FaHamburger, FaPizzaSlice, FaAppleAlt, FaFish } from 'react-icons/fa';
 import { GiFrenchFries, GiSlicedMushroom, GiChickenLeg, GiHamburger } from 'react-icons/gi';
-import { PiCheeseLight } from "react-icons/pi";
 import { CiBowlNoodles } from "react-icons/ci";
 import { IoFastFoodOutline } from "react-icons/io5";
 import { PiHamburgerFill } from "react-icons/pi";

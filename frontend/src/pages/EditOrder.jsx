@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import { Trash2 } from "lucide-react";
+import ProtectedRoute from "../components/ProtectedRoute"; // ADD THIS IMPORT
 
 const EditOrder = () => {
   const { id } = useParams();
@@ -14,10 +15,23 @@ const EditOrder = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Get token from localStorage
+  const getAuthToken = () => {
+    return localStorage.getItem('token');
+  };
+
+  // Create axios instance with auth header
+  const api = axios.create({
+    baseURL: 'http://localhost:5002/api',
+    headers: {
+      'Authorization': `Bearer ${getAuthToken()}`
+    }
+  });
+
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const res = await axios.get(`http://localhost:5002/api/orders/${id}`);
+        const res = await api.get(`/orders/${id}`);
         setOrder(res.data);
         setStatus(res.data.status);
         setLoading(false);
@@ -32,7 +46,7 @@ const EditOrder = () => {
 
   const handleUpdateStatus = async () => {
     try {
-      await axios.put(`http://localhost:5002/api/orders/${id}/status`, { status });
+      await api.put(`/orders/${id}/status`, { status });
       alert("Order status updated!");
       navigate("/orders");
     } catch (err) {
@@ -46,7 +60,7 @@ const EditOrder = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:5002/api/orders/${id}`);
+      await api.delete(`/orders/${id}`);
       alert("Order cancelled successfully!");
       navigate("/orders");
     } catch (err) {
@@ -55,9 +69,32 @@ const EditOrder = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-  if (!order) return <p>No order data found.</p>;
+  if (loading) return (
+    <>
+      <Navbar />
+      <div className="max-w-2xl mx-auto mt-10 p-6">
+        <p>Loading...</p>
+      </div>
+    </>
+  );
+  
+  if (error) return (
+    <>
+      <Navbar />
+      <div className="max-w-2xl mx-auto mt-10 p-6">
+        <p className="text-red-500">{error}</p>
+      </div>
+    </>
+  );
+  
+  if (!order) return (
+    <>
+      <Navbar />
+      <div className="max-w-2xl mx-auto mt-10 p-6">
+        <p>No order data found.</p>
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -130,6 +167,11 @@ const EditOrder = () => {
   );
 };
 
-export default EditOrder;
-
-
+// WRAP THE COMPONENT WITH ProtectedRoute
+export default function ProtectedEditOrder() {
+  return (
+    <ProtectedRoute allowedRoles={['staff']}>
+      <EditOrder />
+    </ProtectedRoute>
+  );
+}

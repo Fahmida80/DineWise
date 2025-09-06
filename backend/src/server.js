@@ -5,13 +5,19 @@ import userRoutes from "./routes/userRoutes.js";
 import menuRoutes from './routes/menuRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import inventoryRoutes from './routes/inventoryRoutes.js';
+import sentimentAnalysisRoutes from './routes/sentimentAnalysisRoutes.js';
+import saladBuilderRoutes from './routes/saladBuilderRoutes.js';
+import recommendationRoutes from './routes/recommendationRoutes.js';
 import { connectDB } from './config/db.js';
 import dotenv from 'dotenv';
 import rateLimiter from './middleware/rateLimiter.js';
 import cors from "cors";
 
 
-dotenv.config();
+// dotenv.config();
+dotenv.config({ path: './../.env' });
+
+console.log('API Key loaded:', !!process.env.GOOGLE_AI_API_KEY);
 
 console.log(process.env.MONGO_URI); // Log the MongoDB URI for debugging
 
@@ -30,12 +36,16 @@ app.use(cors());  // Place this before your routes
 //   next();
 // });
 
+app.use("/api", userRoutes);
 app.use("/api/tables", tableRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use("/api/sentiment", sentimentAnalysisRoutes);
+app.use('/api/salad', saladBuilderRoutes);
+app.use('/api', recommendationRoutes);
 
 connectDB().then( () => {
   app.listen(PORT, () => {

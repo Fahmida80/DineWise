@@ -1,16 +1,16 @@
 import express from "express";
 import { getTables, getTableById, createTable, updateTableStatus, mergeTables, splitTables, deleteTable } from "../controllers/tableController.js";
-
+import protectRoute from '../middleware/protectRoute.js';
 const router = express.Router();
 
 // Live Table Availability (Feature 1)
 router.get("/", getTables);
 router.get("/:id", getTableById);
-router.post("/", createTable);
-router.put("/:id/status", updateTableStatus);
-router.post("/merge", mergeTables);
-router.post("/split", splitTables);
-router.delete("/:id", deleteTable);
+router.post("/", protectRoute(['staff']), createTable);
+router.put("/:id/status", protectRoute(['staff']), updateTableStatus);
+router.post("/merge", protectRoute(['staff']), mergeTables);
+router.post("/split", protectRoute(['staff']), splitTables);
+router.delete("/:id", protectRoute(['staff']), deleteTable);
 // Export the router
 
 export default router;

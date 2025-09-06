@@ -197,3 +197,54 @@ export const cancelOrder = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+// orderController.js - Update placeSaladOrder function
+export const placeSaladOrder = async (req, res) => {
+  try {
+    const { tableNumber, saladItems, totalPrice } = req.body;
+
+    // Validate table
+    const existingTable = await Table.findOne({ number: tableNumber });
+    if (!existingTable) {
+      return res.status(404).json({ message: "Table not found" });
+    }
+
+    // DON'T reduce inventory for salad ingredients - they're separate!
+    // Salad ingredients are for custom bowls, not part of regular inventory
+    console.log('Salad ingredients used:', saladItems.map(item => ({
+      name: item.name,
+      weight: item.weightInGrams
+    })));
+
+    // Create order with custom salad
+    const orderItems = [{
+      name: `Custom Salad Bowl - ${saladItems.map(i => `${i.name} (${i.weightInGrams}g)`).join(', ')}`,
+      quantity: 1,
+      category: 'kitchen',
+      price: totalPrice
+    }];
+
+    const newOrder = new Order({
+      table: existingTable._id,
+      items: orderItems,
+      totalAmount: totalPrice
+    });
+
+    await newOrder.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Salad order placed successfully",
+      order: newOrder
+    });
+
+  } catch (error) {
+    console.error('Error placing salad order:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error placing salad order',
+      error: error.message
+    });
+  }
+};

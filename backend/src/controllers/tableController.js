@@ -10,7 +10,7 @@ export const getTables = async (req, res) => {
     const tables = await Table.find().sort({ createdAt: -1 });
     res.status(200).json(tables);
   } catch (error) {
-    console.log("Tables fetched from DB:", tables);
+    console.log("Tables fetched from DB:", Table);
     console.error("Error fetching tables:", error);
     res.status(500).json({ message: "Failed to get tables", error });
   }

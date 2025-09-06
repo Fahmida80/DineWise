@@ -24,7 +24,15 @@ const menuItemSchema = new mongoose.Schema({
       quantity: { type: Number, required: true }, // Quantity used for this ingredient in the menu item
       unit: { type: String, required: true }, // Unit of measurement (e.g., g, pcs, etc.)
     }
-  ]
+  ],
+  tags: [{
+    type: String,
+    enum: [
+      'breakfast', 'lunch', 'dinner', 'dessert',
+      'hot-weather', 'cold-weather', 'rainy-weather',
+      'spicy', 'comfort-food', 'light-meal', 'popular'
+    ]
+  }]
 });
 
 export default mongoose.model('MenuItem', menuItemSchema);

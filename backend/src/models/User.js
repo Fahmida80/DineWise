@@ -6,12 +6,13 @@ import validator from "validator";
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  role: { type: String, required: true, default: 'customer'}
 });
-
+  
 
 
 // Sattic method for signing up a user
-userSchema.statics.signup = async function(email, password) {
+userSchema.statics.signup = async function(email, password, role = 'customer') {
 
 
   // Validation
@@ -36,7 +37,7 @@ userSchema.statics.signup = async function(email, password) {
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
-  const user = await this.create({ email, password: hash });
+  const user = await this.create({ email, password: hash, role });
 
   return user;
 }

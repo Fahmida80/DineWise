@@ -8,17 +8,22 @@ import {
   getAllOrders,
   updateOrderStatus,
   cancelOrder,
-  getOrderById
+  getOrderById,
+  placeSaladOrder
 } from "../controllers/orderController.js";
+
+import protectRoute from '../middleware/protectRoute.js';
+
 
 const router = express.Router();
 
-router.get('/', getAllOrders);
+router.get('/', protectRoute(['staff']), getAllOrders);
 router.post("/", placeOrder);
-router.get("/kitchen", getKitchenOrders);
-router.get("/bar", getBarOrders);
-router.put("/:id/status", updateOrderStatus);
-router.delete("/:id", cancelOrder);
-router.get("/:id", getOrderById);
+router.get("/kitchen", protectRoute(['staff']), getKitchenOrders);
+router.get("/bar", protectRoute(['staff']), getBarOrders);
+router.put("/:id/status", protectRoute(['staff']),updateOrderStatus);
+router.delete("/:id",protectRoute(['staff']), cancelOrder);
+router.get("/:id",protectRoute(['staff']), getOrderById);
+router.post("/salad-order", placeSaladOrder);
 
 export default router;

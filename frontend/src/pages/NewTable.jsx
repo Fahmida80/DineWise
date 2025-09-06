@@ -1,7 +1,7 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import ProtectedRoute from '../components/ProtectedRoute'; // ADD IMPORT
 
 const NewTable = () => {
   const navigate = useNavigate();
@@ -24,17 +24,19 @@ const NewTable = () => {
     e.preventDefault();
     setError('');
 
-    // Validation
     if (!formData.number || !formData.seats) {
       setError('Table number and seats are required');
       return;
     }
 
     try {
+      const token = localStorage.getItem('token'); // GET TOKEN
+      
       const response = await fetch('http://localhost:5002/api/tables', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // ADD TOKEN
         },
         body: JSON.stringify(formData)
       });
@@ -119,4 +121,11 @@ const NewTable = () => {
   );
 };
 
-export default NewTable;
+// WRAP WITH ProtectedRoute
+export default function ProtectedNewTable() {
+  return (
+    <ProtectedRoute allowedRoles={['staff']}>
+      <NewTable />
+    </ProtectedRoute>
+  );
+}

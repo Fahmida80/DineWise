@@ -7,6 +7,9 @@ import {
   // deleteAllItems
 } from '../controllers/menuController.js';
 
+import protectRoute from '../middleware/protectRoute.js';
+
+
 const router = express.Router();
 
 // Delete all menu items
@@ -15,13 +18,13 @@ const router = express.Router();
 router.get('/', getMenuItems);
 
 // Create a new menu item
-router.post('/', createMenuItem);
+router.post('/', protectRoute(['staff']), createMenuItem);
 
 // Update a menu item
-router.put('/:id', updateMenuItem);
+router.put('/:id', protectRoute(['staff']), updateMenuItem);
 
 // Delete a menu item
-router.delete('/:id', deleteMenuItem);
+router.delete('/:id', protectRoute(['staff']), deleteMenuItem);
 
 
 
