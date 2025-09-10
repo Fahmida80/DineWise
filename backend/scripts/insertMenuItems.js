@@ -34,7 +34,19 @@ const ingredients = [
   { name: 'Tomato Sauce', stock: 100, unit: 'g', threshold: 10 },
   { name: 'Soft Drink', stock: 100, unit: 'ml', threshold: 10 },
   { name: 'Veggie Patty', stock: 100, unit: 'pcs', threshold: 10 },
-  { name: 'Bacon', stock: 100, unit: 'pcs', threshold: 10 }
+  { name: 'Bacon', stock: 100, unit: 'pcs', threshold: 10 },
+
+
+  { name: 'Mango', stock: 1000, unit: 'g', threshold: 200 },
+  { name: 'Sugar', stock: 5000, unit: 'g', threshold: 500 },
+  { name: 'Ice', stock: 2000, unit: 'g', threshold: 300 },
+  { name: 'Orange', stock: 800, unit: 'pieces', threshold: 50 },
+  { name: 'Watermelon', stock: 600, unit: 'g', threshold: 100 },
+  { name: 'Mint Leaves', stock: 200, unit: 'leaves', threshold: 30 },
+  { name: 'Pineapple', stock: 700, unit: 'g', threshold: 150 },
+  { name: 'Lemon', stock: 300, unit: 'pieces', threshold: 20 },
+  { name: 'Water', stock: 10000, unit: 'ml', threshold: 1000 }
+
 ];
 
 // List of menu items to insert (including fast food items and more burgers)
@@ -214,6 +226,75 @@ const menuItems = [
       { name: 'Mayo', quantity: 20, unit: 'g' },
       { name: 'Burger Bun', quantity: 1, unit: 'pcs' }
     ]
+  },
+
+  {
+    name: 'Fresh Mango Juice',
+    description: 'Freshly squeezed mango juice with ice',
+    price: 120,
+    category: 'bar',
+    tags: ['popular', 'hot-weather', 'dessert'],
+    ingredients: [
+      { name: 'Mango', quantity: 200, unit: 'g' },
+      { name: 'Sugar', quantity: 20, unit: 'g' },
+      { name: 'Ice', quantity: 50, unit: 'g' }
+    ]
+  },
+  {
+    name: 'Fresh Orange Juice',
+    description: '100% pure orange juice, no additives',
+    price: 100,
+    category: 'bar',
+    tags: ['popular', 'breakfast', 'hot-weather'],
+    ingredients: [
+      { name: 'Orange', quantity: 3, unit: 'pieces' }
+    ]
+  },
+  {
+    name: 'Watermelon Refresher',
+    description: 'Chilled watermelon juice with mint leaves',
+    price: 110,
+    category: 'bar',
+    tags: ['hot-weather', 'light-meal'],
+    ingredients: [
+      { name: 'Watermelon', quantity: 300, unit: 'g' },
+      { name: 'Mint Leaves', quantity: 5, unit: 'leaves' }
+    ]
+  },
+  {
+    name: 'Tropical Pineapple Juice',
+    description: 'Sweet and tangy pineapple juice',
+    price: 130,
+    category: 'bar',
+    tags: ['popular', 'hot-weather'],
+    ingredients: [
+      { name: 'Pineapple', quantity: 220, unit: 'g' },
+      { name: 'Sugar', quantity: 15, unit: 'g' }
+    ]
+  },
+  {
+    name: 'Mixed Fruit Delight',
+    description: 'Blend of mango, orange, and pineapple',
+    price: 150,
+    category: 'bar',
+    tags: ['popular', 'dessert', 'hot-weather'],
+    ingredients: [
+      { name: 'Mango', quantity: 100, unit: 'g' },
+      { name: 'Orange', quantity: 2, unit: 'pieces' },
+      { name: 'Pineapple', quantity: 100, unit: 'g' }
+    ]
+  },
+  {
+    name: 'Classic Lemonade',
+    description: 'Fresh lemon juice with sugar and water',
+    price: 80,
+    category: 'bar',
+    tags: ['popular', 'hot-weather', 'light-meal'],
+    ingredients: [
+      { name: 'Lemon', quantity: 2, unit: 'pieces' },
+      { name: 'Sugar', quantity: 30, unit: 'g' },
+      { name: 'Water', quantity: 200, unit: 'ml' }
+    ]
   }
 ];
 
@@ -221,69 +302,69 @@ const menuItems = [
 
 
 
-  mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(async () => {
-  console.log('Connected to MongoDB');
+console.log('Connected to MongoDB');
 
-  // Step 1: Delete all existing menu items
-  await MenuItem.deleteMany({});
-  console.log('All existing menu items deleted');
+// Step 1: Delete all existing menu items
+await MenuItem.deleteMany({});
+console.log('All existing menu items deleted');
 
-  // Step 2: Insert ingredients into the database if they don't already exist
-  await Promise.all(
-    ingredients.map(async (ingredient) => {
-      const existingIngredient = await Ingredient.findOne({ name: ingredient.name });
-      if (!existingIngredient) {
-        const newIngredient = new Ingredient(ingredient);
-        await newIngredient.save();
-        console.log(`Ingredient "${ingredient.name}" added`);
+// Step 2: Insert ingredients into the database if they don't already exist
+await Promise.all(
+  ingredients.map(async (ingredient) => {
+    const existingIngredient = await Ingredient.findOne({ name: ingredient.name });
+    if (!existingIngredient) {
+      const newIngredient = new Ingredient(ingredient);
+      await newIngredient.save();
+      console.log(`Ingredient "${ingredient.name}" added`);
+    }
+  })
+);
+
+// Step 3: Insert new menu items
+await Promise.all(
+  menuItems.map(async (menuItem) => {
+    // Find the ingredients by name and link them to their ingredient IDs
+    const ingredientsWithIds = await Promise.all(menuItem.ingredients.map(async (ingredient) => {
+      const ingredientData = await Ingredient.findOne({ name: ingredient.name });
+      if (!ingredientData) {
+        console.log(`Ingredient "${ingredient.name}" not found for menu item "${menuItem.name}"`);
+        return null;  // Skip if ingredient not found
       }
-    })
-  );
+      return {
+        ingredientId: ingredientData._id,  // Link ingredient ID here
+        quantity: ingredient.quantity,
+        unit: ingredient.unit
+      };
+    }));
 
-  // Step 3: Insert new menu items
-  await Promise.all(
-    menuItems.map(async (menuItem) => {
-      // Find the ingredients by name and link them to their ingredient IDs
-      const ingredientsWithIds = await Promise.all(menuItem.ingredients.map(async (ingredient) => {
-        const ingredientData = await Ingredient.findOne({ name: ingredient.name });
-        if (!ingredientData) {
-          console.log(`Ingredient "${ingredient.name}" not found for menu item "${menuItem.name}"`);
-          return null;  // Skip if ingredient not found
-        }
-        return {
-          ingredientId: ingredientData._id,  // Link ingredient ID here
-          quantity: ingredient.quantity,
-          unit: ingredient.unit
-        };
-      }));
+    // Filter out any invalid (null) ingredients (if some weren't found)
+    const validIngredients = ingredientsWithIds.filter(ingredient => ingredient !== null);
 
-      // Filter out any invalid (null) ingredients (if some weren't found)
-      const validIngredients = ingredientsWithIds.filter(ingredient => ingredient !== null);
+    if (validIngredients.length === 0) {
+      console.log(`No valid ingredients found for menu item "${menuItem.name}". Skipping...`);
+      return;  // Skip this menu item if no valid ingredients
+    }
 
-      if (validIngredients.length === 0) {
-        console.log(`No valid ingredients found for menu item "${menuItem.name}". Skipping...`);
-        return;  // Skip this menu item if no valid ingredients
-      }
+    // Create and save the menu item with the linked ingredients
+    const newMenuItem = new MenuItem({
+      name: menuItem.name,
+      description: menuItem.description,
+      price: menuItem.price,
+      category: menuItem.category,
+      tags: menuItem.tags, // Make sure to include tags
+      ingredients: validIngredients,
+    });
+    await newMenuItem.save();
+    console.log(`Menu item "${menuItem.name}" added`);
+  })
+);
 
-      // Create and save the menu item with the linked ingredients
-      const newMenuItem = new MenuItem({
-        name: menuItem.name,
-        description: menuItem.description,
-        price: menuItem.price,
-        category: menuItem.category,
-        tags: menuItem.tags, // Make sure to include tags
-        ingredients: validIngredients,
-      });
-      await newMenuItem.save();
-      console.log(`Menu item "${menuItem.name}" added`);
-    })
-  );
-
-  console.log('Menu items and ingredients inserted successfully');
-  mongoose.disconnect();  // Disconnect from the database
+console.log('Menu items and ingredients inserted successfully');
+mongoose.disconnect();  // Disconnect from the database
 })
 .catch((error) => {
-  console.error('Error inserting data:', error);
-  mongoose.disconnect();  // Disconnect in case of error
+console.error('Error inserting data:', error);
+mongoose.disconnect();  // Disconnect in case of error
 });

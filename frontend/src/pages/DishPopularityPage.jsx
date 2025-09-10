@@ -4,13 +4,14 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { FaHamburger, FaPizzaSlice, FaAppleAlt, FaFish } from 'react-icons/fa';
-import { GiFrenchFries, GiSlicedMushroom, GiChickenLeg, GiHamburger } from 'react-icons/gi';
+import { GiFrenchFries, GiSlicedMushroom, GiChickenLeg, GiHamburger, GiCutLemon, GiWatermelon, GiFruitBowl  } from 'react-icons/gi';
 import { CiBowlNoodles } from "react-icons/ci";
 import { IoFastFoodOutline } from "react-icons/io5";
 import { PiHamburgerFill } from "react-icons/pi";
 import { LuSalad } from "react-icons/lu";
 import { TbMeat } from "react-icons/tb";
 import { LiaBaconSolid } from "react-icons/lia";
+import { RiDrinks2Fill } from "react-icons/ri";
 
 
 
@@ -62,6 +63,10 @@ const DishPopularityPage = () => {
     if (lowerName.includes("nuggets")) return <TbMeat size={50} className="text-yellow-800" />;
     if (lowerName.includes("chicken")) return <GiChickenLeg size={50} className="text-orange-500" />;
     if (lowerName.includes("spaghetti")) return <CiBowlNoodles size={50} className="text-orange-400" />;
+    if (lowerName.includes("juice") || lowerName.includes("drink")) return <RiDrinks2Fill size={50} className="text-blue-700" />;
+    if (lowerName.includes("lemonade")) return <GiCutLemon size={50} className="text-yellow-300" />;
+    if (lowerName.includes("watermelon")) return <GiWatermelon size={50} className="text-red-400" />;
+    if (lowerName.includes("fruit")) return <GiFruitBowl size={50} className="text-pink-400" />;
     
     return <FaPizzaSlice size={50} className="text-gray-500" />;
   };
